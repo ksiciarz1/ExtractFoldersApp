@@ -7,21 +7,31 @@ namespace ExtractFoldersApp
     {
         static void Main(string[] args)
         {
-            var dirName = $@"./Excrated Folders";
-            string[] filePaths = Directory.GetFiles(@"./", "*.bmp", SearchOption.AllDirectories);
+            string parentFolder = Directory.GetParent(Directory.GetParent("./").FullName).FullName;
+            Console.WriteLine(parentFolder);
+
+            var dirName = parentFolder + "\\ExtractedFolder";
+            string[] filePaths = Directory.GetFiles(parentFolder, "*.bmp", SearchOption.AllDirectories);
 
             DirectoryInfo di = Directory.CreateDirectory(dirName);
 
             try
             {
-                System.Console.WriteLine($"Found {filePaths.Length} files. Do you want to continue ? (Y, N)");
-                string answer = System.Console.ReadLine();
-
-                foreach (string file in filePaths)
+                string answer = "";
+                do
                 {
-                    Console.WriteLine($"Moving {file}...");
-                    File.Move(file, di.Name);
-                    Console.WriteLine($"Done!");
+                    Console.WriteLine($"Found {filePaths.Length} files. Do you want to continue ? (Y, N)");
+                    answer = Console.ReadLine();
+                } while (!(answer == "Y" || answer == "N"));
+
+                if (answer == "Y")
+                {
+                    foreach (string file in filePaths)
+                    {
+                        Console.WriteLine($"Moving {file}...");
+                        File.Move(file, di.Name);
+                        Console.WriteLine($"Done!");
+                    }
                 }
             }
             catch (IOException) { }
