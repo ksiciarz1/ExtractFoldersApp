@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Collections.Generic;
 
 namespace ExtractFoldersApp
 {
@@ -11,6 +12,17 @@ namespace ExtractFoldersApp
             Console.WriteLine($"Woring in: {parentFolder}");
 
             var dirName = parentFolder + "\\ExtractedFolder";
+            string[] directories = Directory.GetDirectories(parentFolder);
+            List<string> filteredDirectories = new List<string>();
+
+            foreach (string directory in directories)
+            {
+                if (!(directory.Contains("ExtractFoldersApp") || directory.Contains("ExtractedFolder")))
+                {
+                    filteredDirectories.Add(directory);
+                }
+            }
+
             string[] filePaths = Directory.GetFiles(parentFolder, "*", SearchOption.AllDirectories);
 
             DirectoryInfo di = Directory.CreateDirectory(dirName);
@@ -20,7 +32,7 @@ namespace ExtractFoldersApp
                 string answer = "";
                 do
                 {
-                    Console.WriteLine($"Found {filePaths.Length} files. Do you want to continue ? (Y, N)");
+                    Console.WriteLine($"Found {filePaths.Length} files and {filteredDirectories.Count} directories. Do you want to continue ? (Y, N)");
                     answer = Console.ReadLine();
                 } while (!(answer == "Y" || answer == "N"));
 
@@ -28,10 +40,16 @@ namespace ExtractFoldersApp
                 {
                     foreach (string file in filePaths)
                     {
-                        Console.WriteLine($"Moving {file}...");
-                        File.Move(file, di.Name);
-                        Console.WriteLine($"Done!");
+                        if (!(file.Contains("ExtractFoldersApp") || file.Contains("ExtractedFolder")))
+                        {
+                            Console.WriteLine($"Moving {file}...");
+                            string[] splitedFile = file.Split("\\", StringSplitOptions.RemoveEmptyEntries);
+                            string filename = splitedFile[splitedFile.Length - 1];
+                            File.Move(file, di.FullName + "\\" + filename);
+                        }
                     }
+                    Console.WriteLine("Completed!");
+                    Console.ReadLine();
                 }
             }
             catch (IOException) { }
