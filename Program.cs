@@ -8,10 +8,10 @@ namespace ExtractFoldersApp
         static void Main(string[] args)
         {
             string parentFolder = Directory.GetParent(Directory.GetParent("./").FullName).FullName;
-            Console.WriteLine(parentFolder);
+            Console.WriteLine($"Woring in: {parentFolder}");
 
             var dirName = parentFolder + "\\ExtractedFolder";
-            string[] filePaths = Directory.GetFiles(parentFolder, "*.bmp", SearchOption.AllDirectories);
+            string[] filePaths = Directory.GetFiles(parentFolder, "*", SearchOption.AllDirectories);
 
             DirectoryInfo di = Directory.CreateDirectory(dirName);
 
