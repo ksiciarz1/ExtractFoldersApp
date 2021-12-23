@@ -48,6 +48,10 @@ namespace ExtractFoldersApp
                             File.Move(file, di.FullName + "\\" + filename);
                         }
                     }
+                    foreach (string direcotory in filteredDirectories)
+                    {
+                        Directory.Delete(direcotory);
+                    }
                     Console.WriteLine("Completed!");
                     Console.ReadLine();
                 }
