@@ -25,6 +25,8 @@ namespace ExtractFoldersApp
 
             // Gets all files across Directories
             string[] filePaths = Directory.GetFiles(parentFolder, "*", SearchOption.AllDirectories);
+            long size = 0;
+
 
             DirectoryInfo di;
 
@@ -33,7 +35,14 @@ namespace ExtractFoldersApp
                 string answer = "";
                 do
                 {
-                    Console.WriteLine($"Found {filePaths.Length} files and {filteredDirectories.Count} directories. Do you want to continue ? (Y, N)");
+                    foreach (string file in filePaths)
+                    {
+                        FileInfo fileInfo = new FileInfo(file);
+                        size += fileInfo.Length;
+                    } // TODO: 
+                    MyDataType fileSize = new MyDataType(size);
+                    Console.WriteLine($"Found {filePaths.Length} files and {filteredDirectories.Count} directories" +
+                        $" having {Math.Round(fileSize.value, 2)} {fileSize.dataTypeSize[fileSize.dataType]}. Do you want to continue ? (Y, N)");
                     answer = Console.ReadLine();
                 } while (!(answer == "Y" || answer == "N"));
 
@@ -85,6 +94,47 @@ namespace ExtractFoldersApp
             {
                 Console.WriteLine(e);
             }
+        }
+
+        /// <summary>
+        /// Small datatype making it easier to calculate file size
+        /// </summary>
+        struct MyDataType
+        {
+            public double value;
+            public int dataType = 0;
+            public string[] dataTypeSize = new string[] { "bytes", "kilobytes", "megabytes", "gigabytes", "terabytes" };
+
+
+            /// <param name="value">Size of file</param>
+            /// <param name="dataSizeType">Type of data size</param>
+            public MyDataType(long value, int dataSizeType = 0)
+            {
+                this.value = value;
+                this.dataType = dataSizeType;
+                ConvertToSmallerDataTypes();
+            }
+
+            public void ConvertToSmallerDataTypes()
+            {
+                while (value / 1024 >= 1)
+                {
+                    value /= 1024;
+                    dataType++;
+                }
+            }
+
+            public static MyDataType ConvertToSmallerDataTypes(MyDataType dataType)
+            {
+                MyDataType returnDataType = dataType;
+                while (returnDataType.value / 1024 >= 1)
+                {
+                    returnDataType.value /= 1024;
+                    returnDataType.dataType++;
+                }
+                return returnDataType;
+            }
+
         }
     }
 }
